@@ -1,0 +1,42 @@
+{% extends "manage.html" %}
+{% block title %}
+    <title>创建项目</title>
+{% endblock %}
+{% block manage %}
+<div class="card flex-fill">
+    <div class="card-header">
+        <h5 class="card-title mb-0" style="float:left">创建项目</h5>
+    </div>
+    <div id="datatables-dashboard-traffic_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer">
+        <div class="row">
+            <div class="col-sm-12 col-md-6"></div>
+            <div class="col-sm-12 col-md-6"></div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div style="margin-left: 20px;margin-right: 20px; width: 97%">
+                    <form action="{% url "app_project:project_add" %}" method="post">
+                        <div id="name">
+                            <label>项目名称：</label>
+                            {{ form.name }}
+                            <div class="error-name" style="color: red">
+                                {{ form.name.errors.as_text }}
+                            </div>
+                         </div>
+                        <div id="describe">
+                            <label>描述：</label>
+                            {{ form.describe }}
+                         </div>
+                        <div id="describe">
+                            <label>状态：</label>
+                            {{ form.status }}
+                         </div>
+                        {% csrf_token %}
+                      <button type="submit" class="btn btn-primary" style="float: right">创建</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

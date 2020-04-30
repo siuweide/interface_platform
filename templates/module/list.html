@@ -1,0 +1,91 @@
+{% extends "manage.html" %}
+{% load static %}
+{% block title %}
+    <title>模块管理</title>
+{% endblock %}
+{% block manage %}
+<div class="card flex-fill">
+    <div class="card-header">
+        <h5 class="card-title mb-0" style="float:left">模块管理</h5>
+        <button onclick="add()" type="button" class="btn btn-primary" style="float:right">创建</button>
+    </div>
+    <div id="datatables-dashboard-traffic_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer">
+        <div class="row">
+            <div class="col-sm-12">
+                <table id="datatables-dashboard-traffic" class="table table-striped my-0 dataTable no-footer"
+                    role="grid" aria-describedby="datatables-dashboard-traffic_info">
+                    <thead>
+                        <tr role="row">
+                            <th>项目名称</th>
+                            <th>模块名称</th>
+                            <th>描述</th>
+                            <th>创建时间</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for m in module_list %}
+                        <tr role="row" class="odd">
+                            <td>{{ m.project }}</td>
+                            <td>{{ m.name }}</td>
+                            <td>{{ m.describe }}</td>
+                            <td>{{ m.create_time |date:"Y-m-d H:i:s"}}</td>
+                            <td>
+                              <a href="{% url "app_module:module_edit" m.id %}"><button class="btn btn-primary">修改</button></a>
+                              <button onclick="del({{ m.id }})" type="button" class="btn btn-secondary">删除</button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 翻页功能 -->
+    <div style="float: right">
+        <nav aria-label="Page navigation example">
+          <ul class="pagination">
+          <div id="number-data" style="margin: 10px;margin-right: 30px;">
+                共 {{ module_list.paginator.num_pages }} 页，{{ module_list.paginator.count }} 条数据
+          </div>
+            {% if module_list.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ module_list.previous_page_number }}">上一页</a>
+                </li>
+            {% endif %}
+                <li class="page-item">
+                    <a class="page-link" href="">{{ module_list.number }}</a>
+                </li>
+            {% if module_list.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ module_list.next_page_number }}">下一页</a>
+                </li>
+            {% endif %}
+          </ul>
+
+        </nav>
+    </div>
+
+<script type="text/javascript">
+    function add() {
+        window.location.href = "{% url "app_module:module_add" %}"
+    }
+
+    function del(mid) {
+        var url = window.location.href;
+        if (confirm("确定要删除该模块吗？")) {
+            $.post("/module/delete/", {
+                mid:mid,
+            },function () {
+                alert("删除模块成功")
+            })
+        }else{
+            return false
+        }
+        window.location.href = url
+    }
+</script>
+{% endblock %}
+

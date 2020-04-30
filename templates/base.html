@@ -1,0 +1,22 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel='stylesheet' href='{% static "css/robust.css" %}' type='text/css' />
+    <link rel='stylesheet' href='{% static "css/classic.css" %}' type='text/css' />
+
+    <script src="/static/js/jquery-3.4.1.slim.min.js"></script>
+    <script src="/static/js/popper.min.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+
+{% block title %}
+    <title>首页</title>
+{% endblock %}
+</head>
+<body>
+{% block base %}
+    <!-- 所有的HTML都继承这个页面 -->
+{% endblock %}
+</body>
+</html>

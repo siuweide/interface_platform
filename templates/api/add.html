@@ -1,0 +1,27 @@
+{% extends "manage.html" %}
+{% block title %}
+    <title>创建接口或调试</title>
+{% endblock %}
+{% block manage %}
+<div class="card flex-fill">
+    <div class="card-header">
+        <h5 class="card-title mb-0" style="float:left">创建接口或调试</h5>
+    </div>
+    <div class="reqtype-url" style="margin-left: 20px">
+        <div>
+            <select class="form-control" style="width: 100px;float: left">
+            <option value ="GET">GET</option>
+            <option value ="POST">POST</option>
+            <option value="PUT">PUT</option>
+            <option value="DELETE">DELETE</option>
+            </select>
+            <div id="url" >
+                <input type="text" class="form-control" style="width: 60%;height:38px;float:left;">
+            </div>
+            <div id="send_req" >
+                <input style="height: 38px;margin-left: 20px" class="btn btn-primary" type="button" value="发送">
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

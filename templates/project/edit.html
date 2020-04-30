@@ -1,0 +1,28 @@
+{% extends "manage.html" %}
+{% block title %}
+    <title>项目编辑</title>
+{% endblock %}
+{% block manage %}
+<div class="card flex-fill">
+    <div class="card-header">
+        <h5 class="card-title mb-0" style="float:left">编辑项目</h5>
+    </div>
+    <div id="datatables-dashboard-traffic_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer">
+        <div class="row">
+            <div class="col-sm-12 col-md-6"></div>
+            <div class="col-sm-12 col-md-6"></div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div style="margin-left: 20px;margin-right: 20px; width: 97%">
+                    <form action="{% url "app_project:project_edit" id %}" method="post">
+                        {{ form }}<br>
+                        {% csrf_token %}
+                      <button type="submit" class="btn btn-primary" style="float: right">更新</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
