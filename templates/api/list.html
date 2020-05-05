@@ -33,7 +33,7 @@
                             <td>{{ a.req_type }}</td>
                             <td>{{ a.req_body }}</td>
                             <td>
-                              <a href="{% url "app_module:module_edit" m.id %}"><button class="btn btn-primary">修改</button></a>
+                              <a href="{% url "app_module:module_edit" a.id %}"><button class="btn btn-primary">修改</button></a>
                               <button onclick="del({{ m.id }})" type="button" class="btn btn-secondary">删除</button>
                             </td>
                         </tr>
