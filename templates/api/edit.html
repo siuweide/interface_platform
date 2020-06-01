@@ -1,11 +1,11 @@
 {% extends "manage.html" %}
 {% block title %}
-    <title>创建接口或调试</title>
+    <title>编辑接口或调试</title>
 {% endblock %}
 {% block manage %}
 <div class="card flex-fill">
     <div class="card-header">
-        <h5 class="card-title mb-0" style="float:left">创建接口或调试</h5>
+        <h5 class="card-title mb-0" style="float:left">编辑接口或调试</h5>
     </div>
 
     <div class="reqtype-url" style="margin-left: 20px">
@@ -44,7 +44,7 @@
           <div class="modal-body">
                 <div>
                     <label>接口名称：</label>
-                    <input type="text" id="req_name" class="form-control" style="margin-bottom: 10px">
+                    <input type="text" id="req_name" value="req_name" class="form-control" style="margin-bottom: 10px">
                 </div>
                 <div>
                     <label>项目：</label>
@@ -155,11 +155,15 @@
 <script src="/static/js/jquery.jsonview.js"></script>
 <link href="/static/css/jsoneditor.css" rel="stylesheet">
 <script src="https://cdn.bootcss.com/jsoneditor/5.32.5/jsoneditor.js"></script>
+<script src="/static/js/case.js"></script>
 <script src="/static/js/manage.js"></script>
 <script type="text/javascript">
 
     // 初始化下拉框
     SelectInit();
+
+    // 获取接口信息
+    get_api_info();
 
     //初始化JSONeditor编辑框
     var headers = document.getElementById('headerEditor');
@@ -206,6 +210,8 @@
 
     // 保存接口
     function saveApi() {
+        var url = window.location.href;
+        var aid = url.split("/")[5];
         req_name = $('#req_name').val();
         req_url = $('#req_url').val();
         req_method = $("#req_method option:selected").val();
@@ -220,12 +226,12 @@
         req_module = $("#modulesList option:selected").val();
         req_response = $('#result').val();
 
-
         if (req_name == "") {
             alert('接口名称不能为空')
         }
 
         $.post("/api/save_api/", {
+            aid:aid,
             name:req_name,
             url: req_url,
             method: req_method,

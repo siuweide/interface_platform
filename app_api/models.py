@@ -31,6 +31,7 @@ class ApiCase(models.Model):
     assert_type = models.CharField('断言类型', max_length=50, choices=ASSERT_CHOICES, default='INCLUDE')
     assert_body = models.TextField('断言内容',blank=True, null=True)
     assert_result = models.CharField('断言结果', max_length=200,blank=True, null=True)
+    response_result = models.TextField('响应结果', blank=True, null=True)
     update_time = models.DateTimeField('更新时间', auto_now=True)
     create_time = models.DateTimeField('创建时间', auto_now_add=True)
 

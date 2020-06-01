@@ -28,4 +28,6 @@ urlpatterns = [
     path('module/', include('app_module.urls')),
     # 接口管理
     path('api/', include('app_api.urls')),
+    # 任务管理
+    path('task/', include('app_task.urls')),
 ]

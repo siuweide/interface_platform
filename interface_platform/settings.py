@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'app_project',
     'app_module',
     'app_api',
+    'app_task',
 ]
 
 MIDDLEWARE = [

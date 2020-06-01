@@ -1,0 +1,129 @@
+{% extends "manage.html" %}
+{% block title %}
+    <title>创建任务</title>
+{% endblock %}
+{% block manage %}
+<div class="card flex-fill">
+    <div class="card-header">
+        <h5 class="card-title mb-0" style="float:left">创建任务</h5>
+    </div>
+    <div id="datatables-dashboard-traffic_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer">
+        <div class="row">
+            <div class="col-sm-12 col-md-6"></div>
+            <div class="col-sm-12 col-md-6"></div>
+        </div>
+            <div style="margin-left: 20px;margin-right: 20px; width: 80%">
+
+                <div class="input-group option">
+                    <span class="input-group-addon option-tile">名称：</span>
+                    <input id="task_name" type="text" class="form-control">
+                </div>
+                <br>
+
+                <div class="input-group option">
+                    <span class="input-group-addon option-tile">描述：</span>
+                    <textarea id="task_desc" class="form-control" rows="3" name=textarea></textarea>
+                </div>
+                <br>
+
+                <div class="input-group option">
+                    <span class="input-group-addon option-tile">用例：</span>
+                    <div class="card" style="width: 50%">
+                        <div class="card-body">
+                            <ul id="treeDemo" class="ztree"></ul>
+                        </div>
+                    </div>
+                </div>
+                <br>
+
+                <button type="submit" class="btn btn-primary" onclick="add_task()">创建</button>
+            </div>
+    </div>
+</div>
+{#<script src="https://libs.baidu.com/jquery/1.4.2/jquery.min.js"></script>#}
+{#<link crossorigin="anonymous" integrity="sha384-O/BGwnfw6uRonLZRgEc5L2yiQLzZCGYZiS4qCPvTKbJqXU9XKZwXagTN4EuskkZ4" href="https://lib.baomitu.com/zTree.v3/3.5.40/css/zTreeStyle/zTreeStyle.css" rel="stylesheet">#}
+{#<script crossorigin="anonymous" integrity="sha384-N2k0P4VNZsx6HBdW9/hludm0Ja0SAqYbW6/hbCwRFwm54f41nGuMGFxzYEZE7mFX" src="https://lib.baomitu.com/zTree.v3/3.5.40/js/jquery.ztree.core.js"></script>#}
+{#<script type="text/javascript">#}
+{#   var zTreeObj;#}
+{#   // zTree 的参数配置，深入使用请参考 API 文档（setting 配置详解）#}
+{#   var setting = {};#}
+{#   // zTree 的数据属性，深入使用请参考 API 文档（zTreeNode 节点数据详解）#}
+{#   var zNodes = [#}
+{#   {name:"test1", open:true, children:[#}
+{#      {name:"test1_1"}, {name:"test1_2"}]},#}
+{#   {name:"test2", open:true, children:[#}
+{#      {name:"test2_1"}, {name:"test2_2"}]}#}
+{#   ];#}
+{#   $(document).ready(function(){#}
+{#      zTreeObj = $.fn.zTree.init($("#treeDemo"), setting, zNodes);#}
+{#   });#}
+{#</script>#}
+
+<script src="https://libs.baidu.com/jquery/1.9.1/jquery.min.js"></script>
+<link rel="stylesheet" href="/static/css/bootstrapStyle.css">
+<script src="/static/js/jquery.ztree.core.js"></script>
+<script src="/static/js/jquery.ztree.excheck.js"></script>
+<script src="/static/js/jquery.ztree.exedit.js"></script>
+<script>
+// 获取用例树
+var setting = {
+            view: {
+                addHoverDom: false,
+                removeHoverDom: false,
+                selectedMulti: false
+            },
+            check: {
+                enable: true
+            },
+            data: {
+                simpleData: {
+                    enable: true
+                }
+            },
+            edit: {
+                enable: true
+            }
+        };
+        var zNodes;
+        $(document).ready(function(){
+            $.get("/task/get_case_node/",{}, function (resp) {
+                zNodes = resp.data;
+                console.log('zNodes--------->', zNodes);
+                $.fn.zTree.init($("#treeDemo"), setting, zNodes);
+            });
+
+        });
+
+    // 添加任务
+    function add_task() {
+        task_name = $('#task_name').val();
+        task_desc = $('#task_desc').val();
+
+        var zTreeObj = $.fn.zTree.getZTreeObj("treeDemo");
+        var nodes = zTreeObj.getCheckedNodes(true);
+        console.log('nodes---------->',nodes);
+
+        var cases_name = new Array();
+        console.log('cases_name-------->', cases_name);
+        for (var i = 0; i < nodes.length; i++) {
+            if (nodes[i].isParent == false) {
+                console.log("节点id:" + nodes[i].id);
+                cases_name.push(nodes[i].name);
+            }
+        }
+        // 将列表转为字符串
+        casesStr = JSON.stringify(cases_name);
+        $.post("/task/save/", {
+            task_id:0,
+            name:task_name,
+            desc:task_desc,
+            cases:casesStr,
+        },function (resp) {
+            if (resp.status == 10200) {
+                alert('创建任务成功');
+                window.location.href = "/task/list/"
+            }
+        })
+    }
+</script>
+{% endblock %}
