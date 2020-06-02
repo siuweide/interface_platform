@@ -36,8 +36,9 @@
                                 <td>已完成</td>
                             {% endif %}
                             <td>
-                              <button type="button" class="btn btn-success">执行</button>
+                              <a href="/task/run/{{ t.id }}/"><button type="button" class="btn btn-success">执行</button></a>
                               <a href="{% url "app_task:task_edit" t.id %}"><button class="btn btn-primary">修改</button></a>
+                              <a href="/task/report/{{ t.id }}/"><button class="btn btn-danger">报告</button></a>
                               <button onclick="del({{ t.id }})" type="button" class="btn btn-secondary">删除</button>
                             </td>
                         </tr>
@@ -84,6 +85,7 @@
     function add() {
         window.location.href = "{% url "app_task:task_add" %}";
     }
+
 
     function del(tid) {
         var url = window.location.href;

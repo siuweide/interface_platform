@@ -19,3 +19,21 @@ class Task(models.Model):
     status = models.SmallIntegerField("状态", default='0', choices=STATUS_CHOICES)
     create_time = models.DateTimeField("创建时间", auto_now_add=True)
     update_time = models.DateTimeField('更改时间', auto_now=True)
+
+    def __str__(self):
+        return self.name
+
+class TestReport(models.Model):
+    # 测试报告表
+    task = models.ForeignKey(Task, on_delete=models.CASCADE)
+    name = models.CharField('用例名称', max_length=255)
+    failures = models.IntegerField('失败用例')
+    errors = models.IntegerField('错误用例')
+    skipped = models.IntegerField('跳过的用例')
+    tests = models.IntegerField('运行总用例数')
+    time = models.FloatField('运行总时长')
+    result = models.TextField("详情", default="")
+    create_time = models.DateTimeField('创建时间', auto_now_add=True)
+
+    def __str__(self):
+        return self.name

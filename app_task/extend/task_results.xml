@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+	<testsuite errors="0" failures="0" file=".py" name="RunCase-20200602155001" skipped="0" tests="2" time="1.032" timestamp="2020-06-02T15:50:02">
+		<testcase classname="RunCase" file="app_task\extend\task_run.py" line="16" name="test_file_data_json_00001" time="0.522" timestamp="2020-06-02T15:50:02">
+			<system-out>
+<![CDATA[]]>			</system-out>
+			<system-err>
+<![CDATA[]]>			</system-err>
+		</testcase>
+		<testcase classname="RunCase" file="app_task\extend\task_run.py" line="16" name="test_file_data_json_00002" time="0.510" timestamp="2020-06-02T15:50:02">
+			<system-out>
+<![CDATA[]]>			</system-out>
+			<system-err>
+<![CDATA[]]>			</system-err>
+		</testcase>
+	</testsuite>
+</testsuites>
