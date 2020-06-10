@@ -115,7 +115,7 @@ var setting = {
         casesStr = JSON.stringify(cases_name);
         $.post("/task/save/", {
             task_id:0,
-            name:task_name,
+            task_name:task_name,
             desc:task_desc,
             cases:casesStr,
         },function (resp) {

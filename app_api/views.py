@@ -1,5 +1,8 @@
 import json
+import re
+
 import requests
+from jsonpath_rw import parse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import JsonResponse
 from django.shortcuts import render
@@ -8,6 +11,7 @@ from django.forms.models import model_to_dict
 from app_module.models import Module
 from app_project.models import Project
 from app_api.models import ApiCase
+from app_variable.models import Variable
 from util.Assert import Assert
 
 # Create your views here.
@@ -43,19 +47,61 @@ def send_req(request):
     if request.method == "POST":
         url = request.POST.get("url", "")
         method = request.POST.get("method", "")
-        headers = json.loads(request.POST.get("headers", ""))
-        body = json.loads(request.POST.get("body", ""))
+        headers = request.POST.get("headers", "")
+        cookie = request.POST.get("cookie", "")
+        body = request.POST.get("body", "")
         assert_type = request.POST.get("assert_type", "")
         assert_content = request.POST.get("assert_content", "")
-        print('url------------>',url)
-        print('method------------>',method)
-        print('headers------------>',headers)
-        print('body------------>',body)
+
         if url == "":
             return JsonResponse({"status": 10201, "message":"url is not null"})
+
+        if "${" in url and "}" in url:
+            key = re.findall("\${(.+?)}", url)
+            variable = Variable.objects.filter(key=key[0])
+            if variable:
+                for v in variable:
+                    url = v.value
+            else:
+                return JsonResponse({"status": 10202, "message":"variable is not exists"})
+
+        if "${" in headers and "}" in headers:
+            key = re.findall("\${(.+?)}", headers)
+            variable = Variable.objects.filter(key=key[0])
+            if variable:
+                for v in variable:
+                    real_value = v.value
+                data_list = re.findall("\"(.+?)\"", headers)
+                for data in data_list:
+                    if "${" in data and "}" in data:
+                        replace_data = data
+                        headers = headers.replace(replace_data, real_value)
+
+        if "${" in body and "}" in body:
+            key = re.findall("\${(.+?)}", body)
+            variable = Variable.objects.filter(key=key[0])
+            if variable:
+                for v in variable:
+                    real_value = v.value
+                data_list = re.findall("\"(.+?)\"", body)
+                for data in data_list:
+                    if "${" in data and "}" in data:
+                        replace_data = data
+                        body = body.replace(replace_data, real_value)
+
         if method == "GET":
-            response = requests.get(url=url, params=body, headers=headers,).text
-            response = response.encode('utf-8').decode('unicode_escape')
+            response = requests.get(url=url, params=json.loads(body), headers=json.loads(headers))
+            if cookie == 'yes':
+                cookies = requests.utils.dict_from_cookiejar(response.cookies)
+                cookies = 'sessionid=' + cookies['sessionid']
+                variable = Variable.objects.filter(key='Cookie')
+                if variable:
+                    for item in variable:
+                        item.value = cookies
+                        item.save()
+                else:
+                    Variable.objects.create(key="Cookie", value=cookies)
+            response = response.text.encode('utf-8').decode('unicode_escape')
             if assert_content:
                 if assert_type == 'include':
                     assert_result_success = Assert().assert_success(assert_content,response)
@@ -63,12 +109,22 @@ def send_req(request):
                     if assert_result_success:
                         return JsonResponse({"status": 10200, "message": "success", "data": response, "assert":assert_result_success})
                     else:
-                        return JsonResponse({"status": 10200, "message": "fail", "data": response, "assert":assert_result_fail})
+                        return JsonResponse({"status": 10203, "message": "fail", "data": response, "assert":assert_result_fail})
             else:
                 return JsonResponse({"status": 10200, "message": "success", "data": response})
         elif method == "POST":
-            response = requests.post(url=url, data=body, headers=headers).text
-            response = response.encode('utf-8').decode('unicode_escape')
+            response = requests.post(url=url, data=json.loads(body), headers=json.loads(headers))
+            if cookie == 'yes':
+                cookies = requests.utils.dict_from_cookiejar(response.cookies)
+                cookies = 'sessionid=' + cookies['sessionid']
+                variable = Variable.objects.filter(key='Cookie')
+                if variable:
+                    for item in variable:
+                        item.value = cookies
+                        item.save()
+                else:
+                    Variable.objects.create(key="Cookie", value=cookies)
+            response = response.text.encode('utf-8').decode('unicode_escape')
             if assert_content:
                 if assert_type == 'include':
                     assert_result_success = Assert().assert_success(assert_content,response)
@@ -76,11 +132,11 @@ def send_req(request):
                     if assert_result_success:
                         return JsonResponse({"status": 10200, "message": "success", "data": response, "assert":assert_result_success})
                     else:
-                        return JsonResponse({"status": 10200, "message": "fail", "data": response, "assert":assert_result_fail})
+                        return JsonResponse({"status": 10204, "message": "fail", "data": response, "assert":assert_result_fail})
             else:
                 return JsonResponse({"status": 10200, "message": "success", "data": response})
     else:
-        return JsonResponse({"status": 10202, "message":"method error"})
+        return JsonResponse({"status": 10205, "message":"method error"})
 
 def get_select_data(request):
     # 获取项目、模块的值
@@ -110,19 +166,33 @@ def save_api(request):
         url = request.POST.get('url', "")
         method = request.POST.get('method', "")
         headers = request.POST.get('headers', "")
+        cookie = request.POST.get("cookie", "")
         par_type = request.POST.get('par_type', "")
         body = request.POST.get('body', "")
+        key = request.POST.get("key", "")
+        extract_value = request.POST.get("extract_value", "")
         assert_type = request.POST.get('assert_type', "")
         assert_content = request.POST.get("assert_content", "")
         assert_result = request.POST.get("assert_result", "")
         module = request.POST.get('module', "")
+        interface_type = request.POST.get("interface_type", "")
         response_result = request.POST.get('response', "")
-        print('method------------->',method)
-        print('headers------------->',headers)
-        print('par_type------------->',par_type)
-        print('par_type------------->',par_type)
-        print('body------------->',body)
-        print('response_result------------->',response_result)
+
+        if key != "" and extract_value != "":
+            response_data = json.loads(response_result)
+            json_exe = parse(extract_value)
+            madle = json_exe.find(response_data)
+            try:
+                real_value = [math.value for math in madle][0]
+            except IndexError:
+                return JsonResponse({"status": 10206, "message": "提取的value值有问题，请检查"})
+            variable = Variable.objects.filter(key=key)[0]
+            if variable:
+                variable.extract_value = extract_value
+                variable.value = real_value
+                variable.save()
+            else:
+                Variable.objects.create(key=key, extract_value=extract_value, value=real_value)
 
         if name == "" or url == "" or method == "":
             return JsonResponse({"status":10201, "message":"params error"})
@@ -138,7 +208,9 @@ def save_api(request):
                                  assert_body=assert_content,
                                  assert_result=assert_result,
                                  module_id=module,
-                                 response_result=response_result)
+                                 api_type_id=interface_type,
+                                 response_result=response_result,
+                                 is_cookie=cookie)
         else:
             apicase = ApiCase.objects.get(id=aid)
             apicase.name = name
@@ -152,6 +224,8 @@ def save_api(request):
             apicase.assert_result = assert_result
             apicase.response_result = response_result
             apicase.module_id = module
+            apicase.api_type_id = interface_type
+            apicase.is_cookie = cookie
             apicase.save()
         return JsonResponse({"status":10200, "message":"save api success"})
     else:
@@ -166,6 +240,12 @@ def get_api_info(request):
         project_id = module.project_id
         api_case = model_to_dict(ApiCase.objects.get(id=aid))
         api_case['project_id'] = project_id
+        api_variable = Variable.objects.filter(api_id=aid)
+        if api_variable:
+            for v in api_variable:
+                api_key, api_extract_value = v.key, v.extract_value
+                api_case['api_key'] = api_key
+                api_case['api_extract_value'] = api_extract_value
         return JsonResponse({"status": 10200, "message": "success", "data": api_case})
     else:
         return JsonResponse({"status": 10202, "message": "request method error"})

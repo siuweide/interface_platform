@@ -21,6 +21,12 @@ function get_api_info() {
             // header
             var header_json = JSON.parse(resp.data.header);
             headersEditor.set(header_json);
+            // cookie
+            if(resp.data.is_cookie == "yes"){
+                document.querySelector("#yes").setAttribute("checked", "");
+            }else if(resp.data.is_cookie == "no"){
+                document.querySelector("#no").setAttribute("checked", "");
+            }
             // body
             var par_json = JSON.parse(resp.data.req_body);
             parameterEditor.set(par_json);
@@ -40,6 +46,21 @@ function get_api_info() {
             document.getElementById("projectsList").value = resp.data.project_id;
             // 模块
             document.getElementById("modulesList").value = resp.data.module;
+            // 接口用例类型
+            if(resp.data.api_type == "1"){
+                document.querySelector("#single").setAttribute("checked", "");
+            }else if(resp.data.api_type == "2"){
+                document.querySelector("#multiple").setAttribute("checked", "");
+            }else if(resp.data.api_type == "3") {
+                document.querySelector("#common").setAttribute("checked", "");
+            }
+            //key、value
+            if(resp.data.api_key) {
+                document.querySelector('#variable_key').value = resp.data.api_key;
+            }
+            if(resp.data.api_extract_value) {
+                document.querySelector('#variable_extract_value').value = resp.data.api_extract_value;
+            }
         }
     })
 }

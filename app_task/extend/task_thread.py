@@ -28,6 +28,7 @@ class TaskThread():
         for case_id in case_list:
             api_case = ApiCase.objects.get(id=case_id)
             api_cases = {}
+            api_cases['id'] = api_case.id
             api_cases['url'] = api_case.url
             api_cases['method'] = api_case.method
             api_cases['header'] = api_case.header
@@ -37,6 +38,7 @@ class TaskThread():
             api_cases['assert_body'] = api_case.assert_body
             api_cases['assert_result'] = api_case.assert_result
             api_cases['response_result'] = api_case.response_result
+            api_cases['api_type_id'] = api_case.api_type_id
             api_info_data[api_case.name] = api_cases
 
         # 2、将用例信息，写入到文件当中task_data.json文件当中

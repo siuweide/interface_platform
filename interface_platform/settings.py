@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'app_module',
     'app_api',
     'app_task',
+    'app_variable',
 ]
 
 MIDDLEWARE = [

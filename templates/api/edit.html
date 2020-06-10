@@ -56,6 +56,22 @@
                     <select class="form-control" id="modulesList">
                     </select>
                 </div>
+                <br>
+                <!--接口用例类型-->
+                <div>
+                    <label>接口用例类型：</label>
+                    <label class="radio-inline">
+                        <input type="radio" name="interface_type" id="single" value="1" checked> 单接口用例
+                    </label>
+                    <br>
+                    <label class="radio-inline" style="margin-left: 101.5px">
+                        <input type="radio" name="interface_type" id="multiple" value="2"> 多接口用例
+                    </label>
+                    <br>
+                    <label class="radio-inline" style="margin-left: 101.5px">
+                        <input type="radio" name="interface_type" id="common" value="3"> 公共前置用例
+                    </label>
+                </div>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
@@ -75,6 +91,16 @@
                 <li><a href="#body" data-toggle="tab" style="color: black;margin-left: 20px">Body</a></li>
                 <li><a href="#assert" data-toggle="tab" style="color: black;margin-left: 20px">Assert</a></li>
             </ul>
+        </div>
+
+        <div class="cookie">
+            <label>是否获取cookie：</label>
+            <label class="radio-inline">
+                <input type="radio" name="is_cookie" id="yes" value="yes" > 是
+            </label>
+            <label class="radio-inline">
+                <input type="radio" name="is_cookie" id="no" value="no" checked> 否
+            </label>
         </div>
 
         <!-- tab内容 -->
@@ -148,6 +174,17 @@
             <label>返回结果：</label>
             <textarea id="result" class="form-control" rows="10" name=textarea></textarea>
         </div>
+        <!-- 变量提取器 -->
+        <div>
+            <div id="variable" style="margin-left: 20px; margin-bottom: 10px; margin-top: 10px">
+                <label style="float: left; margin-top: 5px">变量提取器：</label>
+                <input type="text" id="variable_key" class="form-control"
+                       style="width: 43%; float: left"
+                        placeholder="key" >
+                <input type="text" id="variable_extract_value" class="form-control" style="width: 40%"
+                        placeholder="extract_value" >
+            </div>
+        </div>
     </div>
 </div>
 <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
@@ -180,6 +217,7 @@
         req_url = $('#req_url').val();
         req_method = $("#req_method option:selected").val();
         req_headers = headersEditor.get();
+        req_cookie = $('input[name="is_cookie"]:checked').val();
         req_body = parameterEditor.get();
         let req_header_str = JSON.stringify(req_headers, null, 2);
         let req_parameter_str = JSON.stringify(req_body, null, 2);
@@ -191,6 +229,7 @@
             url: req_url,
             method: req_method,
             headers: req_header_str,
+            cookie: req_cookie,
             body: req_parameter_str,
             assert_type: req_assert_type,
             assert_content: req_assert_content,
@@ -216,15 +255,20 @@
         req_url = $('#req_url').val();
         req_method = $("#req_method option:selected").val();
         req_headers = headersEditor.get();
+        req_cookie = $('input[name="is_cookie"]:checked').val();
         par_type = $('input[name="par_type"]:checked').val();
         req_body = parameterEditor.get();
+        variable_key = $('#variable_key').val();
+        variable_extract_value = $('#variable_extract_value').val();
         let req_header_str = JSON.stringify(req_headers, null, 2);
         let req_parameter_str = JSON.stringify(req_body, null, 2);
         req_assert_type = $('input[name="assert_type"]:checked').val();
         req_assert_content = $('#assert_content').val();
         req_assert_result = $('#assert_result').val();
         req_module = $("#modulesList option:selected").val();
+        req_interface_type = $('input[name="interface_type"]:checked').val();
         req_response = $('#result').val();
+        console.log('variable_extract_value-------------->', variable_extract_value)
 
         if (req_name == "") {
             alert('接口名称不能为空')
@@ -236,12 +280,16 @@
             url: req_url,
             method: req_method,
             headers: req_header_str,
+            cookie: req_cookie,
             par_type:par_type,
             body: req_parameter_str,
+            key: variable_key,
+            extract_value: variable_extract_value,
             assert_type: req_assert_type,
             assert_content: req_assert_content,
             assert_result:req_assert_result,
             module:req_module,
+            interface_type: req_interface_type,
             response: req_response
         }, function (resp) {
             if (resp.status == 10200) {

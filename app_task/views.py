@@ -39,7 +39,7 @@ def task_save(request):
     # 保存任务
     if request.method == "POST":
         task_id = int(request.POST.get('task_id', ''))
-        name = request.POST.get("name", "")
+        task_name = request.POST.get("task_name", "")
         desc = request.POST.get("desc", "")
         cases_name = request.POST.get("cases", "")
         cases_dict = json.loads(cases_name)
@@ -48,12 +48,12 @@ def task_save(request):
             apicase = ApiCase.objects.get(name=name)
             cases.append(apicase.id)
         if task_id == 0:
-            Task.objects.create(name=name,
+            Task.objects.create(name=task_name,
                                 describe=desc,
                                 cases=cases)
         else:
             task = Task.objects.get(id=task_id)
-            task.name = name
+            task.name = task_name
             task.describe = desc
             task.cases = cases
             task.save()
