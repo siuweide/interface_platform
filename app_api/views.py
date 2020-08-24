@@ -14,7 +14,8 @@ from app_api.models import ApiCase
 from app_variable.models import Variable
 from util.Assert import Assert
 
-# Create your views here.
+from util.Request import Request
+
 
 def api_list(request):
     # 接口列表
@@ -52,6 +53,7 @@ def send_req(request):
         body = request.POST.get("body", "")
         assert_type = request.POST.get("assert_type", "")
         assert_content = request.POST.get("assert_content", "")
+        request = Request()
 
         if url == "":
             return JsonResponse({"status": 10201, "message":"url is not null"})
@@ -66,41 +68,15 @@ def send_req(request):
                 return JsonResponse({"status": 10202, "message":"variable is not exists"})
 
         if "${" in headers and "}" in headers:
-            key = re.findall("\${(.+?)}", headers)
-            variable = Variable.objects.filter(key=key[0])
-            if variable:
-                for v in variable:
-                    real_value = v.value
-                data_list = re.findall("\"(.+?)\"", headers)
-                for data in data_list:
-                    if "${" in data and "}" in data:
-                        replace_data = data
-                        headers = headers.replace(replace_data, real_value)
+            headers = request.get_actual_header(headers)
 
         if "${" in body and "}" in body:
-            key = re.findall("\${(.+?)}", body)
-            variable = Variable.objects.filter(key=key[0])
-            if variable:
-                for v in variable:
-                    real_value = v.value
-                data_list = re.findall("\"(.+?)\"", body)
-                for data in data_list:
-                    if "${" in data and "}" in data:
-                        replace_data = data
-                        body = body.replace(replace_data, real_value)
+            body = request.get_actual_body(body)
 
         if method == "GET":
             response = requests.get(url=url, params=json.loads(body), headers=json.loads(headers))
             if cookie == 'yes':
-                cookies = requests.utils.dict_from_cookiejar(response.cookies)
-                cookies = 'sessionid=' + cookies['sessionid']
-                variable = Variable.objects.filter(key='Cookie')
-                if variable:
-                    for item in variable:
-                        item.value = cookies
-                        item.save()
-                else:
-                    Variable.objects.create(key="Cookie", value=cookies)
+                request.create_or_update_cookie(response)
             response = response.text.encode('utf-8').decode('unicode_escape')
             if assert_content:
                 if assert_type == 'include':
@@ -112,18 +88,11 @@ def send_req(request):
                         return JsonResponse({"status": 10203, "message": "fail", "data": response, "assert":assert_result_fail})
             else:
                 return JsonResponse({"status": 10200, "message": "success", "data": response})
+
         elif method == "POST":
             response = requests.post(url=url, data=json.loads(body), headers=json.loads(headers))
             if cookie == 'yes':
-                cookies = requests.utils.dict_from_cookiejar(response.cookies)
-                cookies = 'sessionid=' + cookies['sessionid']
-                variable = Variable.objects.filter(key='Cookie')
-                if variable:
-                    for item in variable:
-                        item.value = cookies
-                        item.save()
-                else:
-                    Variable.objects.create(key="Cookie", value=cookies)
+                request.create_or_update_cookie(response)
             response = response.text.encode('utf-8').decode('unicode_escape')
             if assert_content:
                 if assert_type == 'include':
@@ -186,13 +155,14 @@ def save_api(request):
                 real_value = [math.value for math in madle][0]
             except IndexError:
                 return JsonResponse({"status": 10206, "message": "提取的value值有问题，请检查"})
-            variable = Variable.objects.filter(key=key)[0]
+            variable = Variable.objects.filter(key=key)
             if variable:
-                variable.extract_value = extract_value
-                variable.value = real_value
-                variable.save()
+                variable[0].extract_value = extract_value
+                variable[0].value = real_value
+                variable[0].api_id = aid
+                variable[0].save()
             else:
-                Variable.objects.create(key=key, extract_value=extract_value, value=real_value)
+                Variable.objects.create(key=key, extract_value=extract_value, value=real_value, api_id=aid)
 
         if name == "" or url == "" or method == "":
             return JsonResponse({"status":10201, "message":"params error"})

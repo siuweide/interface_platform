@@ -1,11 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-	<testsuite errors="0" failures="0" file=".py" name="RunCase-20200610170535" skipped="0" tests="1" time="0.179" timestamp="2020-06-10T17:05:36">
-		<testcase classname="RunCase" file="app_task\extend\task_run.py" line="27" name="test_file_data_json_00001" time="0.179" timestamp="2020-06-10T17:05:36">
+	<testsuite errors="0" failures="0" file=".py" name="RunCase-20200619144050" skipped="0" tests="4" time="0.320" timestamp="2020-06-19T14:40:51">
+		<testcase classname="RunCase" file="app_task\extend\task_run.py" line="27" name="test_file_data_json_删除嘉宾" time="0.087" timestamp="2020-06-19T14:40:50">
 			<system-out>
-<![CDATA[进入到api=3的条件当中--------》3333
-cookies---------> {'sessionid': 'rrvbsfa4mzgjib40bqo422d8fm3dcuu5'}
-]]>			</system-out>
+<![CDATA[]]>			</system-out>
+			<system-err>
+<![CDATA[]]>			</system-err>
+		</testcase>
+		<testcase classname="RunCase" file="app_task\extend\task_run.py" line="27" name="test_file_data_json_查询所有嘉宾" time="0.034" timestamp="2020-06-19T14:40:50">
+			<system-out>
+<![CDATA[]]>			</system-out>
+			<system-err>
+<![CDATA[]]>			</system-err>
+		</testcase>
+		<testcase classname="RunCase" file="app_task\extend\task_run.py" line="27" name="test_file_data_json_添加嘉宾" time="0.019" timestamp="2020-06-19T14:40:50">
+			<system-out>
+<![CDATA[]]>			</system-out>
+			<system-err>
+<![CDATA[]]>			</system-err>
+		</testcase>
+		<testcase classname="RunCase" file="app_task\extend\task_run.py" line="27" name="test_file_data_json_登录接口" time="0.181" timestamp="2020-06-19T14:40:51">
+			<system-out>
+<![CDATA[]]>			</system-out>
 			<system-err>
 <![CDATA[]]>			</system-err>
 		</testcase>

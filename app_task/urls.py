@@ -18,8 +18,10 @@ urlpatterns = [
     path('get_case_node/', views.get_case_node, name='get_case_node'),
     # 任务执行
     path('run/<int:tid>/', views.run_task, name='run_task'),
-    # 任务报告
-    path('report/<int:tid>/', views.task_report, name='task_report'),
-    # 任务详细报告
-    path('report/detail/', views.task_report_detail, name='task_report_detail'),
+    # # 任务报告
+    # path('report/<int:tid>/', views.task_report, name='task_report'),
+    # # 任务详细报告
+    # path('report/detail/', views.task_report_detail, name='task_report_detail'),
+    # 查看beautifulreport
+    path('beautifulreport/<int:tid>/', views.select_beautifulreport, name='select_beautifulreport')
     ]

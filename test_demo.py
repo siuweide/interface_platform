@@ -1,6 +1,9 @@
-from ddt import ddt, file_data
+import os
+import time
 import unittest
 import requests
+from ddt import ddt, file_data
+from BeautifulReport import BeautifulReport
 
 @ddt
 class RunCase(unittest.TestCase):
@@ -12,4 +15,9 @@ class RunCase(unittest.TestCase):
             print(res.text)
 
 if __name__ == '__main__':
-    unittest.main()
+    now = time.strftime('%Y-%m-%d_%H_%M_%S', time.localtime())
+    filename = now + '.html'
+    report_path = os.path.abspath(os.path.dirname(__file__)) + '/report/'
+    testsuite = unittest.makeSuite(RunCase)
+    runner = BeautifulReport(testsuite)
+    runner.report(description='接口测试报告', filename=filename, log_path=report_path)

@@ -3,10 +3,6 @@ from django.contrib.auth import authenticate
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 
-def index(request):
-    # 首页
-    return render(request, 'index.html')
-
 def user_login(request):
     # 用户登录
     if request.method == 'GET':
@@ -14,9 +10,7 @@ def user_login(request):
     elif request.method == 'POST':
         username = request.POST.get('username', '')
         password = request.POST.get('password', '')
-        print('username------->', username)
-        print('password------->', password)
-        user = authenticate(request,  username=username, password=password )
+        user = authenticate(request, username=username, password=password)
         if user:
             auth.login(request, user)
             # 第一种方法，登录时设置cookie

@@ -5,8 +5,9 @@ from time import sleep
 from xml.etree import ElementTree
 
 from app_api.models import ApiCase
-from app_task.models import Task, TestReport
+from app_task.models import Task
 from app_task.setting import TASK_DATA, TASK_RUN, TASK_RESULT
+from interface_platform.settings import BASE_DIR
 
 
 class TaskThread():
@@ -50,37 +51,45 @@ class TaskThread():
         os.system("python " + TASK_RUN)
         sleep(2)
 
-        # 4、保存结果
-        self.save_result()
+        # 查找report下最后一个文件的名字
+        path_dir = BASE_DIR + '/templates/report/'
+        print(path_dir)
+        for dirpath, dirnames, filenames in os.walk(path_dir):
+            filename = filenames[-1]
+        task.report = filename
+        task.save()
 
+    #     # 4、保存结果
+    #     self.save_result()
+    #
         # 5、将状态改为已完成
         task.status = 2
         task.save()
-
-    def save_result(self):
-        # 获取task_results的结果
-        file = open(TASK_RESULT, encoding='utf-8')
-        result_xml = file.read()
-        file.close()
-
-        # 提取测试报告的信息
-        tree = ElementTree.parse(TASK_RESULT)
-        root = tree.getroot()
-        info = root.find("testsuite")
-        errors, failures, name, skipped, tests, time = info.attrib['errors'], info.attrib['failures'], \
-                                                       info.attrib['name'], \
-                                                       info.attrib['skipped'], \
-                                                       info.attrib['tests'], info.attrib['time']
-
-        # 将结果写入到数据库里面
-        TestReport.objects.create(task_id=self.task_id,
-                                   name=name,
-                                   failures=failures,
-                                   errors=errors,
-                                   skipped=skipped,
-                                   tests=tests,
-                                   time=time,
-                                   result=result_xml)
+    #
+    # def save_result(self):
+    #     # 获取task_results的结果
+    #     file = open(TASK_RESULT, encoding='utf-8')
+    #     result_xml = file.read()
+    #     file.close()
+    #
+    #     # 提取测试报告的信息
+    #     tree = ElementTree.parse(TASK_RESULT)
+    #     root = tree.getroot()
+    #     info = root.find("testsuite")
+    #     errors, failures, name, skipped, tests, time = info.attrib['errors'], info.attrib['failures'], \
+    #                                                    info.attrib['name'], \
+    #                                                    info.attrib['skipped'], \
+    #                                                    info.attrib['tests'], info.attrib['time']
+    #
+    #     # 将结果写入到数据库里面
+    #     TestReport.objects.create(task_id=self.task_id,
+    #                                name=name,
+    #                                failures=failures,
+    #                                errors=errors,
+    #                                skipped=skipped,
+    #                                tests=tests,
+    #                                time=time,
+    #                                result=result_xml)
 
     def run_task_thread(self):
         sleep(2)

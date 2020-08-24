@@ -9,7 +9,7 @@ from django.core.paginator import Paginator,EmptyPage,PageNotAnInteger
 from app_api.models import ApiCase
 from app_module.models import Module
 from app_project.models import Project
-from app_task.models import Task, TestReport
+from app_task.models import Task
 from app_task.extend.task_thread import TaskThread
 
 
@@ -185,29 +185,35 @@ def run_task(request, tid):
     task.run()
     return redirect("app_task:task_list")
 
-def task_report(request, tid):
-    # 查看任务的测试报告
-    reports = TestReport.objects.filter(task_id=tid)
-    p = Paginator(reports, 5)
-    page = request.GET.get("page", "")
-    if page == "":
-        page = 1
-    try:
-        reports = p.page(page)
-    except EmptyPage:
-        reports = p.page(p.num_pages)
-    except PageNotAnInteger:
-        reports = p.page(1)
+# def task_report(request, tid):
+#     # 查看任务的测试报告
+#     reports = TestReport.objects.filter(task_id=tid)
+#     p = Paginator(reports, 5)
+#     page = request.GET.get("page", "")
+#     if page == "":
+#         page = 1
+#     try:
+#         reports = p.page(page)
+#     except EmptyPage:
+#         reports = p.page(p.num_pages)
+#     except PageNotAnInteger:
+#         reports = p.page(1)
+#
+#     return render(request, 'task/report.html', {
+#         'reports':reports
+#     })
+#
+# def task_report_detail(request):
+#     # 查看任务报告的详细结果
+#     if request.method == "POST":
+#         tid = request.POST.get("rid", "")
+#         report_detail = TestReport.objects.get(id=tid)
+#         data = model_to_dict(report_detail)
+#         return JsonResponse({"status":10200, "message":"success", "data":data})
+#     else:
+#         return JsonResponse({"status": 10101, "message": "request method error"})
 
-    return render(request, 'task/report.html', {
-        'reports':reports
-    })
-
-def task_report_detail(request):
-    if request.method == "POST":
-        tid = request.POST.get("rid", "")
-        report_detail = TestReport.objects.get(id=tid)
-        data = model_to_dict(report_detail)
-        return JsonResponse({"status":10200, "message":"success", "data":data})
-    else:
-        return JsonResponse({"status": 10101, "message": "request method error"})
+def select_beautifulreport(request, tid):
+    if request.method == "GET":
+        obj = Task.objects.get(id=tid)
+        return render(request, 'report/%s' % obj.report)

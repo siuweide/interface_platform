@@ -17,8 +17,8 @@
                     <thead>
                         <tr role="row">
                             <th>所属模块</th>
+                            <th>接口名称</th>
                             <th>接口地址</th>
-                            <th>接口头部</th>
                             <th>请求方法</th>
                             <th>请求数据</th>
                             <th>操作</th>
@@ -28,8 +28,8 @@
                         {% for a in api_list %}
                         <tr role="row" class="odd">
                             <td>{{ a.module }}</td>
+                            <td>{{ a.name }}</td>
                             <td>{{ a.url }}</td>
-                            <td>{{ a.header }}</td>
                             <td>{{ a.req_type }}</td>
                             <td>{{ a.req_body }}</td>
                             <td>
@@ -74,7 +74,6 @@
     {#table{width:100%;border:1px solid #999;}table td{word-break: keep-all;white-space:nowrap;}#}
 
 </style>
-<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
 <script type="text/javascript">
     function add() {
         window.location.href = "{% url "app_api:api_add" %}"
